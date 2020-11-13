@@ -18,7 +18,7 @@ gnomad_annot_files=$(patsubst %.vcf.gz,%.gnomad.vcf.bgz,$(wildcard *.vcf.gz))
 gnomad_annot:$(gnomad_annot_files)
 
 #annotate cosmic vars
-COSMIC_DB=${ROOT_DB}/cosmic/CosmicSNV_INDELS.gnomad.vcf.bgz
+COSMIC_DB=${ROOT_D}/databases/cosmic/CosmicSNV_INDELS.gnomad.vcf.bgz
 cosmic_annot_files=$(patsubst %.gnomad.vcf.bgz,%.cosmic.vcf.bgz,$(gnomad_annot_files))
 %.cosmic.vcf.bgz:%.gnomad.vcf.bgz
 	${BCFTOOLS} annotate -r ${CHRS} -O z -o $@ -c ID -m +COSMIC -a ${COSMIC_DB} $<
