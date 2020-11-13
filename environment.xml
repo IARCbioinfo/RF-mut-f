@@ -1,0 +1,9 @@
+name: rf-mut-f
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base
+  - bcftools
+  -
