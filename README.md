@@ -45,30 +45,13 @@ The release2 directory contains 3 subdirectories:
  links to 73 VCFs files of tumor-only samples.
  
  	
-The below code create the previous file structure (get_mesomics_rel2.sh):
+The script code/bash/get_mesomics_rel2.sh create the previous file structure.
 
-```
-#create mesomics rel2 dataset
-mkdir -p mesomics/release2
-mkdir -p mesomics/release2/matched
-mkdir -p mesomics/release2/matched-t-only
-mkdir -p mesomics/release2/t-only
-#matched data (46)
-RELEASE2=/data/gcs/mesomics/files/WGS/variant_calling/somatic_release2_26032020/intermediate_files/normalized_calling
-ln -s ${RELEASE2}/Mutect2_somatic_pon_blood_TN_gatk4150_normalized_20200324/*_norm.vcf.gz $PWD/mesomics/release2/matched        
-ln -s ${RELEASE2}/Mutect2_somatic_pon_blood_TN_gatk4150_normalized_20200324/*_norm.vcf.gz.tbi $PWD/mesomics/release2/matched
-#matched-t-only data (46)
-ln -s ${RELEASE2}/Mutect2_somatic_pon_blood_TN_Tonly_mode_gatk4150_normalized_20200324/*_norm.vcf.gz $PWD/mesomics/release2/matched-t-only
-ln -s ${RELEASE2}/Mutect2_somatic_pon_blood_TN_Tonly_mode_gatk4150_normalized_20200324/*_norm.vcf.gz.tbi $PWD/mesomics/release2/matched-t-only
-#t-only data (73)
-ln -s ${RELEASE2}/Mutect2_somatic_pon_blood_Tonly_gatk4150_normalized_20200325/*_norm.vcf.gz $PWD/mesomics/release2/t-only
-ln -s ${RELEASE2}/Mutect2_somatic_pon_blood_Tonly_gatk4150_normalized_20200325/*_norm.vcf.gz.tbi $PWD/mesomics/release2/t-only
-#we remove the MESO_094 calls
-rm -f  $PWD/mesomics/release2/t-only/MESO_094_T_filtered_PASS_norm.vcf.gz
-rm -f  $PWD/mesomics/release2/t-only/MESO_094_T_filtered_PASS_norm.vcf.gz.tbi
-#better calling for MESO_094
-MESO_094=/data/gcs/mesomics/files/WGS/variant_calling/somatic_release2_MESO_094_28102020/intermediate_files/Mutect2-nf_results_MESOMICS_26102020_pon_blood_Tonly_gatk4150_MESO_094_normalized
-ln -s ${MESO_094}/MESO_094_filtered_PASS_norm.vcf.gz $PWD/mesomics/release2/t-only/MESO_094_T_filtered_PASS_norm.vcf.gz
-ln -s ${MESO_094}/MESO_094_filtered_PASS_norm.vcf.gz $PWD/mesomics/release2/t-only/MESO_094_T_filtered_PASS_norm.vcf.gz.tbi
-```	
+## Training and optimizing a random forest classifier
 
+
+
+### Random forest missing values
+
+Typically, random forest methods/packages encourage two ways of handling missing values: a) drop data points with missing values (not recommended); b) fill in missing values with the median (for numerical values) or mode (for categorical values). For MPOS missing values we will use the median. [post](https://medium.com/airbnb-engineering/overcoming-missing-values-in-a-random-forest-classifier-7b1fc1fc03ba#:~:text=Typically%2C%20random%20forest%20methods%2Fpackages,mode%20(for%20categorical%20values))
+ 
