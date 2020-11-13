@@ -4,6 +4,11 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - r-base
-  - bcftools
-  -
+  - r-base=4.0.3
+  - r-randomforest
+  - r-caret
+  - r-e1071
+  - r-catools
+  - r-argparse
+  - bcftools=1.10.2
+  - tabix
