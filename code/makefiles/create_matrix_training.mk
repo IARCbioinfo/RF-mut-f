@@ -39,7 +39,10 @@ RGFF3=${ROOT_D}/databases/genome/Homo_sapiens.GRCh38.99.chr.gff3.gz
 
 add_effect=$(patsubst %.centro_cgenes.vcf.bgz,%.csq.vcf.bgz,$(add_centro_cgenes))
 %.csq.vcf.bgz: %.centro_cgenes.vcf.bgz
-	${BCFTOOLS} annotate --rename-chrs ${ROOT_D}/databases/misc/chr-names2.txt $< | ${BCFTOOLS} csq -p a -O z -o $@ -f ${RFASTA} -g ${RGFF3} -
+	#${BCFTOOLS} annotate --rename-chrs ${ROOT_D}/databases/misc/chr-names2.txt $< | ${BCFTOOLS} csq -p a -O z -o $@ -f ${RFASTA} -g ${RGFF3} - | 
+	${BCFTOOLS} annotate --rename-chrs ${ROOT_D}/databases/misc/chr-names2.txt $< | ${BCFTOOLS} csq -p a -f ${RFASTA} -g ${RGFF3} - | \
+	${BCFTOOLS} annotate --rename-chrs ${ROOT_D}/databases/misc/number2names.txt -O z -o $@ -
+	${TABIX} $@
 add_csq:$(add_effect)
 
 #we mark the SOMATICS Vars and annot common vars
@@ -47,7 +50,8 @@ annot_somatics=$(patsubst %.csq.vcf.bgz,%.annot_somatics.vcf.bgz,$(add_effect))
 
 #Annot somatics
 %.annot_somatics.vcf.bgz:%.csq.vcf.bgz
-	${BCFTOOLS} annotate -a ../matched/$(subst .tonly.csq.vcf.bgz,.csq.vcf.bgz,$<) -m +SOMATIC -O z -o $@ $< 
+	${BCFTOOLS} annotate -a ../matched/$(subst .csq.vcf.bgz,.vcf.gz,$<) -m +SOMATIC -O z -o $@ $< 
+	${TABIX} $@
 som:$(annot_somatics)
 
 #split somatics from germline
@@ -55,6 +59,8 @@ split_sg=$(patsubst %.annot_somatics.vcf.bgz,%.somatics.vcf.bgz,$(annot_somatics
 %.somatics.vcf.bgz:%.annot_somatics.vcf.bgz
 	${BCFTOOLS}  view -e "SOMATIC==1" -O z -o $(subst .annot_somatics.vcf.bgz,.germline.vcf.bgz,$<) $<
 	${BCFTOOLS}  view -i "SOMATIC==1" -O z -o $(subst .annot_somatics.vcf.bgz,.somatics.vcf.bgz,$<) $<
+	${TABIX} $(subst .annot_somatics.vcf.bgz,.germline.vcf.bgz,$<)
+	${TABIX} $@
 split:$(split_sg)
 # we built the variants matrix
 matrix=$(patsubst %.somatics.vcf.bgz,%.somatics.snv.matrix,$(split_sg))
