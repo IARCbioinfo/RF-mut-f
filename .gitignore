@@ -2,3 +2,6 @@ mesomics
 container
 *.vcf.bgz*
 *Homo_sapiens.GRCh38*
+*.out
+*.log
+

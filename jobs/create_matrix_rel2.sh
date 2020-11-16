@@ -9,7 +9,7 @@ ROOT=/data/scratch/digenovaa/Somatic-reference-free/SNV-INDELs/RF-mut-f
 #make file
 CM=${ROOT}/code/makefiles/create_matrix_training.mk
 #container
-CONTAINER=${ROOT}/container/rf-mut-f_v1.0.sif
+CONTAINER=${ROOT}/container/rf-mut-f_v2.0.sif
 #release to process
 REL2DIR=${ROOT}/mesomics/release2/matched-t-only
 

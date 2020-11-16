@@ -4,13 +4,8 @@ library(caret)
 library(e1071)
 library(caTools)
 
-
-
-
-
 args = commandArgs(trailingOnly=TRUE)
 if (length(args)==0) {
-  #stop("At least one argument must be supplied (input file).n", call.=FALSE)
   stop("We expect : mtry ntree nodesize somatics germline working_directory", call.=FALSE)
 }
 #get the comand line parameters
@@ -26,9 +21,16 @@ print(paste("Tunning parameters:",param_mtry,param_ntree,param_nodesize))
 #test1, with meso data
 setwd(param_wdir)
 #we load the somatics variants 
-#ds=read.table("sample/matched/SOMATICS_SNPS.txt",h=T)
 ds=read.table(param_somatics,h=T)
-#sapply(ds, class)
+#table(ds$MPOS == ".")
+#we handle the missing values of MPOS and replace them by median
+vs=as.integer(ds[ds$MPOS != ".",]$MPOS)
+#we compute the median of MPOS values
+m_mpos_s=median(vs)
+#we replace the "." by the median
+ds$MPOS=replace(ds$MPOS,ds$MPOS==".",m_mpos_s)
+print(paste0(m_mpos_s))
+
 #summary(ds)
 #we transform the variables to factor/integers when needed
 ds <- transform(
@@ -59,17 +61,19 @@ ds <- transform(
   NS=as.integer(NS), # number of samples with the var
   SOMATIC=as.factor(SOMATIC) #var is somatic or not
 )
-#sapply(ds, class)
-#we compute the median of MPOS for somatic variants
-m_mpos_s=median(ds$MPOS,na.rm=TRUE)
-print(paste0(m_mpos_s))
-#we replace NAs of Mpos by median
-ds$MPOS=replace(ds$MPOS,is.na(ds$MPOS),m_mpos_s)
-#summary(ds$MPOS)
 
+#summary(ds)
 #germlines variants
 dg=read.table(param_germline,h=T)
+vg=as.integer(dg[dg$MPOS != ".",]$MPOS)
+#table(dg$MPOS == ".")
+#summary(va)
+m_mpos_g=median(vg)
+#we replace the missing MPOS values by median of germline variants
+dg$MPOS=replace(dg$MPOS,dg$MPOS==".",m_mpos_g)
+print(paste0(m_mpos_g))
 #summary(dg)
+
 dg <- transform(
   dg,
   FILE=as.factor(FILE), #sample name
@@ -98,12 +102,6 @@ dg <- transform(
   NS=as.integer(NS), # number of samples with the var
   SOMATIC=as.factor(SOMATIC) #var is somatic or not
 )
-#we compute the median of MPOS for germline variants
-m_mpos_g=median(dg$MPOS,na.rm=TRUE)
-#we replace NAs of MPOS by median
-dg$MPOS=replace(dg$MPOS,is.na(dg$MPOS),m_mpos_g)
-#print(paste0(m_mpos_g))
-#summary(dg$MPOS)
 #quit()
 #sapply(dg, class)
 #summary(dg)
@@ -112,7 +110,6 @@ dgs=dg[sample(nrow(dg), 1*dim(ds)*1),]
 dss=ds[sample(nrow(ds), 1*dim(ds)*1),]
 dim(dgs)
 dim(dss)
-
 
 # now we can merge both variant sets
 meso_data=rbind(dss,dgs)
