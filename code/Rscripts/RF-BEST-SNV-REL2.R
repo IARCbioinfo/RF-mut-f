@@ -101,8 +101,8 @@ dg <- transform(
 )
 
 #we sample randomly a number of germline variants from dgs (10% for demo)
-dgs=dg[sample(nrow(dg), 1.0*dim(ds)*1),]
-dss=ds[sample(nrow(ds), 1.0*dim(ds)*1),]
+dgs=dg[sample(nrow(dg), 0.8*dim(ds)*1),]
+dss=ds[sample(nrow(ds), 0.8*dim(ds)*1),]
 dim(dgs)
 dim(dss)
 # now we can merge both variant sets
