@@ -19,4 +19,4 @@ rm -f  $PWD/mesomics/release2/t-only/MESO_094_T_filtered_PASS_norm.vcf.gz.tbi
 #better calling for MESO_094
 MESO_094=/data/gcs/mesomics/files/WGS/variant_calling/somatic_release2_MESO_094_28102020/intermediate_files/Mutect2-nf_results_MESOMICS_26102020_pon_blood_Tonly_gatk4150_MESO_094_normalized
 ln -s ${MESO_094}/MESO_094_filtered_PASS_norm.vcf.gz $PWD/mesomics/release2/t-only/MESO_094_T_filtered_PASS_norm.vcf.gz
-ln -s ${MESO_094}/MESO_094_filtered_PASS_norm.vcf.gz $PWD/mesomics/release2/t-only/MESO_094_T_filtered_PASS_norm.vcf.gz.tbi
+ln -s ${MESO_094}/MESO_094_filtered_PASS_norm.vcf.gz.tbi $PWD/mesomics/release2/t-only/MESO_094_T_filtered_PASS_norm.vcf.gz.tbi

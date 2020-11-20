@@ -110,7 +110,6 @@ meso_data=rbind(dss,dgs)
 head(meso_data)
 #we drop unused columnns (vars)
 df <- subset(meso_data, select = -c(FILE, CHROM, POS,CODING))
-#we split the data for testing and evaluation
 dim(df)
 
 #we train the randomForest (def values)
@@ -129,3 +128,8 @@ print(rf) #default tree
 cat('Model building complete. Saving model...\n')
 saveRDS(rf, file=param_model_out)
 cat('Model saved.\n')
+
+cat('Saving the working space..\n')
+save.image(file=paste0(param_model_out,".RData"))
+cat('Working space saved')
+

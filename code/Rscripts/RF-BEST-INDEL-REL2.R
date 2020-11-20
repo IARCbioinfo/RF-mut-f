@@ -217,3 +217,7 @@ print(rf) #default tree
 cat('Model building complete. Saving model...\n')
 saveRDS(rf, file=param_model_out)
 cat('Model saved.\n')
+
+cat('Saving the working space..\n')
+save.image(file=paste0(param_model_out,".RData"))
+cat('Working space saved')

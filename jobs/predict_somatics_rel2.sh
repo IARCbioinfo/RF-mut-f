@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name="P-TONLY"
 #SBATCH --partition=high_p
-#SBATCH -c 30
+#SBATCH -c 35
 #SBATCH --mem-per-cpu=2000
 
 ##we use the base code and containers
@@ -15,4 +15,4 @@ REL2DIR=${ROOT}/mesomics/release2/t-only
 
 cd ${REL2DIR}
 #exec
-singularity exec $CONTAINER make -f ${CM} all -j 30
+singularity exec $CONTAINER make -f ${CM} all -j 25
