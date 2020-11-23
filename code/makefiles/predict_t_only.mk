@@ -50,7 +50,7 @@ add_csq:$(add_effect)
 matrix=$(patsubst %.csq.vcf.bgz,%.csq.snv.matrix,$(add_effect))
 CMF=${ROOT_D}/code/perl/VCF/extract_feature_from_VCF.pl
 %.csq.snv.matrix:%.csq.vcf.bgz
-	perl ${CMF} -a $< > $@.log
+	perl ${CMF} -a $< > $@.log 2>$@.err
 to_matrix:$(matrix)
 
 # we merge the matrix in a single file of variants for Somatics and Germline

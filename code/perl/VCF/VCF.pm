@@ -419,7 +419,15 @@ sub build_feature_table{
           #push(@cols,$tags->{MBQ});
           #push(@cols,$tags->{MFRL});
           #push(@cols,$tags->{MMQ});
-          push(@cols,$tags->{MPOS});
+
+	  #we ask if MPOS is negative
+	  if($tags->{MPOS} < 0){
+		print STDERR "replacing negative MPOS value=$tags->{MPOS} by . \n";
+          	push(@cols,".");
+          }else{
+          	push(@cols,$tags->{MPOS});
+	  }
+
           push(@cols,$tags->{DP});
 	  if($skyp){
           #push(@cols,$tags->{GERMQ});
