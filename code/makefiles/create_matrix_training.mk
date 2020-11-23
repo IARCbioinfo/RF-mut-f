@@ -67,8 +67,8 @@ matrix=$(patsubst %.somatics.vcf.bgz,%.somatics.snv.matrix,$(split_sg))
 #CMF=/Users/adigenova/Projects/IARC/bioinfo/iarcbioinfo/TON-Calling/VCF/extract_feature_from_VCF.pl
 CMF=${ROOT_D}/code/perl/VCF/extract_feature_from_VCF.pl
 %.somatics.snv.matrix:%.somatics.vcf.bgz
-	perl ${CMF} -a $< > $@.log
-	perl ${CMF} -a $(subst .somatics.vcf.bgz,.germline.vcf.bgz,$<) > $@.germ.log
+	perl ${CMF} -a $< > $@.log 2>$@.err
+	perl ${CMF} -a $(subst .somatics.vcf.bgz,.germline.vcf.bgz,$<) > $@.germ.log 2>$@.germ.err
 to_matrix:$(matrix)
 
 # we merge the matrix in a single file of variants for Somatics and Germline
