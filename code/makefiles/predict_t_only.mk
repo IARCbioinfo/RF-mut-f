@@ -63,11 +63,11 @@ RFM=${ROOT_D}/mesomics/release2/matched-t-only
 #we make the predictions using the best RF model for SNVs and INDELs
 	#SNV
 rf_snv_m61_predictions.txt:Mutations.snv.matrix.txt
-	Rscript ${ROOT_D}/code/Rscripts/RF-APPLY-MODEL.R -i Mutations.snv.matrix.txt -o ${PWD} -m ${RFM}/rf-12_1500_25_snv_meso61.rds -s rf_snv_m61
+	Rscript ${ROOT_D}/code/Rscripts/RF-APPLY-MODEL-CUTOFF-VOTES-PROB.R -i Mutations.snv.matrix.txt -o ${PWD} -m ${RFM}/rf-8_1000_5_snv_meso61.r1.rds -s rf_snv_m61.r1
 	#Rscript RF-APPLY-MODEL.R -i Mutations.snv.matrix.txt -o ${PWD} -m ${RFM}/rf-12_1500_25_snv_wmeso61.rds -s rf_snv_wm61
 	#INDELS
 rf_indels_m61_predictions.txt:Mutations.snv.matrix.txt
-	Rscript ${ROOT_D}/code/Rscripts/RF-APPLY-MODEL.R -i Mutations.indel.matrix.txt -o ${PWD} -m ${RFM}/rf-12_1500_25_indel_meso61.rds -s rf_indels_m61
+	Rscript ${ROOT_D}/code/Rscripts/RF-APPLY-MODEL-CUTOFF-VOTES-PROB.R -i Mutations.indel.matrix.txt -o ${PWD} -m ${RFM}/rf-8_1000_5_indel_meso61.r1.rds -s rf_indels_m61.r1
 	#Rscript RF-APPLY-MODEL.R -i Mutations.indel.matrix.txt -o ${PWD} -m ${RFM}/rf-12_1500_25_indel_wmeso61.rds -s rf_indels_wm61
 
 all: centro_genes add_csq Mutations.snv.matrix.txt rf_snv_m61_predictions.txt rf_indels_m61_predictions.txt rf_indels_m61_predictions.txt
