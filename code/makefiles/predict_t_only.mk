@@ -53,24 +53,26 @@ CMF=${ROOT_D}/code/perl/VCF/extract_feature_from_VCF.pl
 	perl ${CMF} -a $< > $@.log 2>$@.err
 to_matrix:$(matrix)
 
-# we merge the matrix in a single file of variants for Somatics and Germline
-Mutations.snv.matrix.txt:$(matrix)
-	cat $(matrix) |  grep -v "FILE"| awk 'BEGIN{print "FILE CHROM POS SNVS BCSQ CODING COSMIC_CENSUS_GENE COSMIC GNOMAD CENTROMER MPOS DP GERMQ SEQQ STRANDQ TLOD AF ADR ADA OR1 OR2 OA1 OA2 NS SOMATIC"}{a[$$2"-"$$3]++; b[$$2"-"$$3]=$$0}END{for(i in a){print b[i]" "a[i]" 1"}}' | sed 's/_filtered_PASS_norm.csq.vcf.bgz//g' > $@
-	cat $(subst .snv.matrix,.indel.matrix,$(matrix)) |  grep -v "FILE"| awk 'BEGIN{print "FILE CHROM POS SNVS BCSQ CODING COSMIC_CENSUS_GENE COSMIC GNOMAD CENTROMER MPOS DP GERMQ SEQQ STRANDQ TLOD AF ADR ADA OR1 OR2 OA1 OA2 NS SOMATIC"}{a[$$2"-"$$3]++; b[$$2"-"$$3]=$$0}END{for(i in a){print b[i]" "a[i]" 1"}}' | sed 's/_filtered_PASS_norm.csq.vcf.bgz//g' > $(subst .snv.matrix.txt,.indel.matrix.txt,$@)
-
 #random forest models
 RFM=${ROOT_D}/mesomics/release2/matched-t-only
-#we make the predictions using the best RF model for SNVs and INDELs
-	#SNV
-rf_snv_m61_predictions.txt:Mutations.snv.matrix.txt
-	Rscript ${ROOT_D}/code/Rscripts/RF-APPLY-MODEL-CUTOFF-VOTES-PROB.R -i Mutations.snv.matrix.txt -o ${PWD} -m ${RFM}/rf-8_1000_5_snv_meso61.r1.rds -s rf_snv_m61.r1
-	#Rscript RF-APPLY-MODEL.R -i Mutations.snv.matrix.txt -o ${PWD} -m ${RFM}/rf-12_1500_25_snv_wmeso61.rds -s rf_snv_wm61
-	#INDELS
-rf_indels_m61_predictions.txt:Mutations.snv.matrix.txt
-	Rscript ${ROOT_D}/code/Rscripts/RF-APPLY-MODEL-CUTOFF-VOTES-PROB.R -i Mutations.indel.matrix.txt -o ${PWD} -m ${RFM}/rf-8_1000_5_indel_meso61.r1.rds -s rf_indels_m61.r1
-	#Rscript RF-APPLY-MODEL.R -i Mutations.indel.matrix.txt -o ${PWD} -m ${RFM}/rf-12_1500_25_indel_wmeso61.rds -s rf_indels_wm61
 
-all: centro_genes add_csq Mutations.snv.matrix.txt rf_snv_m61_predictions.txt rf_indels_m61_predictions.txt rf_indels_m61_predictions.txt
+#we call the random forest on uncollapsed data
+Mutations.snv.uncollapsed.matrix.txt:$(matrix)
+	cat $(matrix) |  grep -v "FILE" | awk '{a[$$2"-"$$3]++;}END{for(i in a){print i" "a[i]}}' > snv.ns
+	#the NF== 25 remove one var from MESO_084 that constains 24 columms due to the segfault error, the var is "chrM 14154"
+	cat $(matrix) |  grep -v "FILE" | awk 'BEGIN{print "FILE CHROM POS SNVS BCSQ CODING COSMIC_CENSUS_GENE COSMIC GNOMAD CENTROMER MPOS DP GERMQ SEQQ STRANDQ TLOD AF ADR ADA OR1 OR2 OA1 OA2 NS SOMATIC"; while(getline <"snv.ns"){a[$$1]=$$2}}{print $$0" "a[$$2"-"$$3]" 1"}' | sed 's/_filtered_PASS_norm.csq.vcf.bgz//g' | awk '{if(NF == 25){print $$0}}' > $@
 
+#we call the random forest on uncollapsed data
+Mutations.indel.uncollapsed.matrix.txt:$(matrix)
+	cat $(subst .snv.matrix,.indel.matrix,$(matrix)) |  grep -v "FILE" | awk '{a[$$2"-"$$3]++;}END{for(i in a){print i" "a[i]}}' > indel.ns
+	cat $(subst .snv.matrix,.indel.matrix,$(matrix)) |  grep -v "FILE" | awk 'BEGIN{print "FILE CHROM POS SNVS BCSQ CODING COSMIC_CENSUS_GENE COSMIC GNOMAD CENTROMER MPOS DP GERMQ SEQQ STRANDQ TLOD AF ADR ADA OR1 OR2 OA1 OA2 NS SOMATIC"; while(getline <"indel.ns"){a[$$1]=$$2}}{print $$0" "a[$$2"-"$$3]" 1"}' | sed 's/_filtered_PASS_norm.csq.vcf.bgz//g' > $@
 
+#apply the random forest to the uncollapsed data
+rf_snv_uncollapsed_m61.r1_predictions.txt:Mutations.snv.uncollapsed.matrix.txt
+	Rscript ${ROOT_D}/code/Rscripts/RF-APPLY-MODEL-CUTOFF-VOTES-PROB.R -i Mutations.snv.uncollapsed.matrix.txt -o ${PWD} -m ${RFM}/rf-8_1000_5_snv_meso61.r1.rds -s rf_snv_uncollapsed_m61.r1
+#INDELS
+rf_indel_uncollapsed_m61.r1_predictions.txt:Mutations.indel.uncollapsed.matrix.txt
+	Rscript ${ROOT_D}/code/Rscripts/RF-APPLY-MODEL-CUTOFF-VOTES-PROB.R -i Mutations.indel.uncollapsed.matrix.txt -o ${PWD} -m ${RFM}/rf-8_1000_5_indel_meso61.r1.rds -s rf_indel_uncollapsed_m61.r1
+
+all: centro_genes add_csq Mutations.snv.uncollapsed.matrix.txt Mutations.indel.uncollapsed.matrix.txt rf_snv_uncollapsed_m61.r1_predictions.txt rf_indel_uncollapsed_m61.r1_predictions.txt
 
