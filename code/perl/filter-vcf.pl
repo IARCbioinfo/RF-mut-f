@@ -46,10 +46,10 @@ while(my $line=<FILE>){
         my @data=split /\t/,$line;
 	if($line =~m/^#/){
 		if($line =~m/#CHROM/){
-			#print "##FORMAT=<ID=RF_SP,Number=A,Type=Float,Description=\"Random Forest probability for somatic class\">\n";
-			#print $line."\n";
+			print "##FORMAT=<ID=RF_SP,Number=A,Type=Float,Description=\"Random Forest probability for somatic class\">\n";
+			print $line."\n";
 		}else{
-		 	#print $line."\n";
+		 	print $line."\n";
 		}
 		
 	}else{
@@ -58,7 +58,7 @@ while(my $line=<FILE>){
 			if(defined $hsnp->{join("__",$data[0],$data[1])}){
 				my $prob=$hsnp->{join("__",$data[0],$data[1])};
 				$data[7]="RF_SP=$prob;".$data[7];
-				#print join("\t",@data)."\n";
+				print join("\t",@data)."\n";
 				$somatic++;
 			}
               }else{
@@ -66,7 +66,7 @@ while(my $line=<FILE>){
 			if(defined $hindel->{join("__",$data[0],$data[1])}){
 				my $prob=$hindel->{join("__",$data[0],$data[1])};
 				$data[7]="RF_SP=$prob;".$data[7];
-				#print join("\t",@data)."\n";
+				print join("\t",@data)."\n";
 				$somatic++;
 			}
 	      }

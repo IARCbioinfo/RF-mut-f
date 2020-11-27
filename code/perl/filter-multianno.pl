@@ -1,4 +1,3 @@
-
 ###############################################################################
 # Author: Alex Di Genova 
 # Laboratory: IARC/SCG/RCG
@@ -9,85 +8,97 @@ use Data::Dumper;
 use Getopt::Std;
 use strict;
 
+
 sub usage {
-   print "$0 usage : -a  -b  -c\n";
+   print "$0 usage : -a <rf_model_snv_pred.txt> -b <rf_model_indel_pred.txt> -c <cutoff:0.5>  -d <vcf> -s <sample> \n";
    print "Error in use\n";
    exit 1;
 }
 
 my %opts = ();
-getopts( "a:b:c:", \%opts );
-if ( !defined $opts{a}  ) {
+getopts( "a:b:c:d:s:", \%opts );
+if ( !defined $opts{a} or !defined $opts{b} or !defined $opts{d} or !defined $opts{s} ) {
    usage;
 }
 
-my ($hash)=load_vars($opts{a},$opts{b});
-#print Dumper($hash);
-open(FILE, $opts{c}) or die "cannot open file $opts{c}\n";
+my $cuttof=0.5;
+if(defined $opts{c}){
+	$cuttof=$opts{c};
+}
 
+#we get the decision
+my ($hsnp)=load_vars($opts{a},$cuttof,$opts{s});
+my ($hindel)=load_vars($opts{b},$cuttof,$opts{s});
+
+
+
+print STDERR "Total somatic SNVs loaded ($opts{s})  :". scalar(keys %{$hsnp}) ."\n";
+print STDERR "Total somatic INDELs loaded ($opts{s}):". scalar(keys %{$hindel}) ."\n";
+#print Dumper($hash);
+open(FILE, $opts{d}) or die "cannot open file $opts{d}\n";
+
+my $somatic=0;
+my $bases={A=>1,C=>1,T=>1,G=>1};
+my $total_lines=0;
 while(my $line=<FILE>){
-	chomp $line;
+        chomp $line;
+	$total_lines++;
         my @data=split /\t/,$line;
-	if($line =~m/^Chr/){
+	if($line=~m/^Chr/){
 		print $line."\n";
 	}else{
-		if(defined $hash->{$data[0]}->{$data[1]}){
-			print $line."\n";
-			$hash->{$data[0]}->{$data[1]}=1;
-		}elsif(length($data[3]) > length($data[4]) and defined $hash->{$data[0]}->{$data[1]-1}){
-			print $line."\n";
-			$hash->{$data[0]}->{$data[1]-1}=1;
-		}elsif(length($data[3]) == length($data[4]) and $data[4] eq "-" and defined $hash->{$data[0]}->{$data[1]-1}){
-			print $line."\n";
-			$hash->{$data[0]}->{$data[1]-1}=1;
-		}
+		#we check if variants is SNP
+		if(defined $bases->{$data[3]} and defined $bases->{$data[4]}){
+			if(defined $hsnp->{join("__",$data[0],$data[1])}){
+				#print $line." $somatic\n";
+				print $line."\n";
+				$somatic++;
+			}else{
+				#print STDERR "NOT FOUND\n".$line."\n";
+			}
+              }else{
+			#we try an indel 
+			if(defined $hindel->{join("__",$data[0],$data[1])}){
+				print $line."\n";
+				$somatic++;
+			#annovar encode alt deletions increasing pos+1, example below:
+			#chr1    941119  941119  A       -       intronic
+			#MESO_084_T      chr1    941118  NN      MODIFIER#	
+			#for ref deletions is not the case
+			#chr1    3086979 3086979 -       A	
+			#MESO_084_T      chr1    3086979 NN      MODIFIER	
+			}elsif(defined $hindel->{join("__",$data[0],$data[1]-1)}){
+				#print $line." $somatic\n";
+				print $line."\n";
+				$somatic++;
+			}else{
+				#print STDERR "NOT FOUND\n".$line."\n";
+			}
+	      }
+	
 	}
 }
 
-foreach my $k(sort keys %{$hash}){
-	foreach my $p (sort keys %{$hash->{$k}}){
-		if($hash->{$k}->{$p} != 1){
-			print STDERR join(" ","MISS",$k,$p,$hash->{$k}->{$p})."\n";
-		}
-	}	
-}
 
-
-
-
+#SOMATIC
+print STDERR "A total of $somatic variants were annotated for $opts{s}\n";
+#print STDERR "Total lines  $total_lines in $opts{s}\n";
 
 sub load_vars{
-	my ($file,$sample)=@_;
+	my ($file,$cutoff, $sample)=@_;
 	open(FILE,$file) or die "cannot open file $file\n";
 	my $hash=();
 	while(my $line=<FILE>){
 	    	chomp $line;
         	my @data=split /\t/,$line;
-		next if ($data[1] ne $sample);
+		next if($data[1] ne $sample);
 		#next if not somatic
-		next if($data[$#data] != 1);
-		if($data[2] =~m/chr/){
-					
-		}else{
-			$data[2]="chr".$data[2];
+		if($data[$#data-3] > $cuttof ){
+			$hash->{join("__",$data[2],$data[3])}=$data[$#data-3];
 		}
-		if($data[2] =~m/MT/){
-			#print STDERR $line."\n";
-			$data[2]="chrM";
-		}
-			#print join("\t",@data)."\n";
-		#if($data[4] eq "NN"){
-		 #$data[3]++;
-		#$hash->{$data[2]}->{$data[3]+1}="INDEL";
-		#$hash->{$data[2]}->{$data[3]-1}=$data[4];
-		#$hash->{$data[2]}->{$data[3]}="INDEL";
-		#}else{
-		$hash->{$data[2]}->{$data[3]}=$data[4];
-		#}
-
-		
 	}
 	close(FILE);
 	return $hash;
-
 }
+
+
