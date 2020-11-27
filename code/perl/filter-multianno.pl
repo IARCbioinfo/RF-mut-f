@@ -10,7 +10,7 @@ use strict;
 
 
 sub usage {
-   print "$0 usage : -a <rf_model_snv_pred.txt> -b <rf_model_indel_pred.txt> -c <cutoff:0.5>  -d <vcf> -s <sample> \n";
+   print "$0 usage : -a <rf_model_snv_pred.txt> -b <rf_model_indel_pred.txt> -c <cutoff:0.5>  -d <annot> -s <sample> \n";
    print "Error in use\n";
    exit 1;
 }
@@ -67,12 +67,16 @@ while(my $line=<FILE>){
 			#for ref deletions is not the case
 			#chr1    3086979 3086979 -       A	
 			#MESO_084_T      chr1    3086979 NN      MODIFIER	
-			}elsif(defined $hindel->{join("__",$data[0],$data[1]-1)}){
+			#INDEL case
+			}elsif(defined $hindel->{join("__",$data[0],$data[1]-1)} and length($data[3]) > length($data[4])){
 				#print $line." $somatic\n";
 				print $line."\n";
 				$somatic++;
-			}else{
+			# handle the MNP case, such as CC>TT
+			}elsif(length($data[3]) == length($data[4]) and $data[4] eq "-" and defined $hindel->{join("__",$data[0],$data[1]-1)}){
 				#print STDERR "NOT FOUND\n".$line."\n";
+				print $line."\n";
+				$somatic++;
 			}
 	      }
 	
