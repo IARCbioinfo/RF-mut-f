@@ -1,6 +1,8 @@
 # RF-mut-f
 A random forest implementation to filter germline mutations from tumor-only samples
 
+version generated using commit "0497874a56539d3babada985cb268f079a1dcc6a".
+
 ## Container
 To ensure reproducibility, we created a docker/singularity container:
 
