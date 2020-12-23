@@ -56,12 +56,12 @@ while(my $line=<FILE>){
         my @data=split /\t/,$line;
 	if($line =~m/^#/){
 		if($line =~m/#CHROM/){
-			print PFVCF "##FORMAT=<ID=RF_SP,Number=A,Type=Float,Description=\"Random Forest probability for somatic class\">\n";
-			print PFVCF "##FORMAT=<ID=IS_CODING,Number=A,Type=Integer,Description=\"Indicate if the variant is coding or not (Annovar classification)\">\n";
+			print PFVCF "##INFO=<ID=RF_SP,Number=A,Type=Float,Description=\"Random Forest probability for somatic class\">\n";
+			print PFVCF "##INFO=<ID=IS_CODING,Number=1,Type=Integer,Description=\"Indicate if the variant is coding or not (Annovar classification)\">\n";
 			print PFVCF $line."\n";
 
-			print NPVCF "##FORMAT=<ID=RF_SP,Number=A,Type=Float,Description=\"Random Forest probability for somatic class\">\n";
-			print NPVCF "##FORMAT=<ID=IS_CODING,Number=A,Type=Integer,Description=\"Indicate if the variant is coding or not (Annovar classification)\">\n";
+			print NPVCF "##INFO=<ID=RF_SP,Number=A,Type=Float,Description=\"Random Forest probability for somatic class\">\n";
+			print NPVCF "##INFO=<ID=IS_CODING,Number=1,Type=Integer,Description=\"Indicate if the variant is coding or not (Annovar classification)\">\n";
 			print NPVCF $line."\n";
 		}else{
 		 	print PFVCF $line."\n";
