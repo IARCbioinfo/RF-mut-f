@@ -28,22 +28,22 @@ singularity pull docker://adigenova/rf-mut-f:v2.0
 ```
 
 
-## Mesomics (rel2)
+## Mesomics 
 
 The release2 directory contains 3 subdirectories:
 
 
 1. **matched**
  
-	links to 46 VCFs files of matched tumors.
+	links  to VCFs files of matched tumors.
 	
 2. **matched-t-only**
  
-   links to 46 VCFs files of matched samples called as t-only.
+   links to VCFs files of matched samples called as t-only.
    	  
 3. **t-only**
   
- links to 73 VCFs files of tumor-only samples.
+ links to  VCFs files of tumor-only samples.
  
  	
 The script code/bash/get_mesomics_rel2.sh create the previous file structure.
@@ -86,13 +86,13 @@ A total of 20 features from 3 groups including external databases (COSMIC, GNOMA
 The script **jobs/create\_matrix\_rel2.sh**, is a SLURM script that use the singularity container to create the following files: 
 
 1. **Somatics.snv.matrix.txt**
-    Matrix with somatic SNVs  (n=203,992)
+    Matrix with somatic SNVs  
 2. **Germline.snv.matrix.txt**
-    Matrix with Germline SNVs (n=694,272)
+    Matrix with Germline SNVs 
 3. **Somatics.indel.matrix.txt**
-    Matrix with somatic INDELs (n=15,727)
+    Matrix with somatic INDELs 
 4. **Germline.indel.matrix.txt** 
- 	Matrix with Germline INDELs (n=69,969)
+ 	Matrix with Germline INDELs 
  	
 These files are used for training and optimizing the RF classifier. 	
 This job will allocate 50 CPUs in a single machine. 
