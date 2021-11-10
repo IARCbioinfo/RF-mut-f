@@ -1,7 +1,6 @@
 # RF-mut-f
 A random forest implementation to filter germline mutations from tumor-only samples
 
-version generated using commit "0497874a56539d3babada985cb268f079a1dcc6a".
 
 ## Container
 To ensure reproducibility, we created a docker/singularity container:
@@ -119,7 +118,8 @@ MPOS is a relevant variable for the model, the third one after Allele frequency 
 
 
 
+## Notes
+
 ### Random forest missing values
 
 Typically, random forest methods/packages encourage two ways of handling missing values: a) drop data points with missing values (not recommended); b) fill in missing values with the median (for numerical values) or mode (for categorical values). For MPOS missing values we will use the median. [post](https://medium.com/airbnb-engineering/overcoming-missing-values-in-a-random-forest-classifier-7b1fc1fc03ba#:~:text=Typically%2C%20random%20forest%20methods%2Fpackages,mode%20(for%20categorical%20values))
- 
